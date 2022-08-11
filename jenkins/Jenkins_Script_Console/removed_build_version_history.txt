@@ -1,0 +1,12 @@
+LINKS: 
+https://superuser.com/questions/1418885/clear-jenkins-build-history-clear-build-yesterday#:~:text=Delete%20a%20Jenkins%20build%20via,script%20in%20Jenkins%20Script%20Console.
+
+
+
+Dashboard => Manage Jenkins => Script Console
+
+def jobName = "JOB_FOLDER_NAME"  
+def job = Jenkins.instance.getItem(jobName)  
+job.getBuilds().each { it.delete() }  
+job.nextBuildNumber = 1   
+job.save()

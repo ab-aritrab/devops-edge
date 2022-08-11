@@ -1,0 +1,24 @@
+---
+ - hosts: webserver
+   become: true
+   tasks:
+    - name: Log into DockerHub
+      docker_login:
+        username: abaritrab
+        password: Aritra@85
+        email: ab.aritrab@gmail.com
+
+    - name: stop previous version docker
+      shell: docker stop demojar
+      ignore_errors: yes
+
+    - name: remove stopped container
+      shell: docker rm -f demojar    
+      ignore_errors: yes
+
+    - name: remove docker images
+      shell: docker image rm -f abaritrab/demojar
+      ignore_errors: yes
+
+    - name: create docker image
+      shell: docker run -d --name demojar -p 8191:8080 abaritrab/demojar

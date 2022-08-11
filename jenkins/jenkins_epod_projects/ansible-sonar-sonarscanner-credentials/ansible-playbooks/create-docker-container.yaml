@@ -1,0 +1,26 @@
+#ansible-playbook -i hosts -e "UID=tcghub" -e "DOCKER_PASS=A3.WnNf.NpRb4X-" -e "IMG_NAME=hello_world" create-docker-container.yaml
+---
+ - hosts: webserver
+   become: true
+   tasks:
+    - name: Log into DockerHub
+      docker_login:
+        username: "{{UID}}"
+        password: "{{DOCKER_PASS}}"
+        email: aritra.biswas@tcgdigital.com
+
+    - name: stop previous version docker
+      shell: docker stop "{{IMG_NAME}}"
+      ignore_errors: yes
+
+    - name: remove stopped container
+      shell: docker rm -f "{{IMG_NAME}}"    
+      ignore_errors: yes
+
+    - name: remove docker images
+      shell: docker image rm -f "{{UID}}"/"{{IMG_NAME}}"
+      ignore_errors: yes
+
+    - name: create docker image
+      shell: docker run -d --name "{{IMG_NAME}}" -p "{{PORT_GLOB}}":"{{PORT_LOCAL}}" "{{UID}}"/"{{IMG_NAME}}"
+

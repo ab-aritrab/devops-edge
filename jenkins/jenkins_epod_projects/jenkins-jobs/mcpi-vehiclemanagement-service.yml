@@ -1,0 +1,70 @@
+Description: 
+  PIPELINE_PROJECT_NAME: mcpi-vehiclemanagement-service
+  REPO: https://tcgrepo.tcgdigital.com/root/hpl_mcpi_epod.git
+  PATH:  epod_services/vehiclemanagement-service
+  DIR_STRUCTURE
+        src/main      
+        pom.xml
+        Doeckerfile
+
+  This project was generated with the MAVEN build.
+
+  IMAGE NAME=mcpi_vehiclemanagement_service
+  SERVICE PORT=10001
+
+
+Additional Behaviours:
+    Polling ignores commits in certain paths:
+        Excluded Regions:
+          epod_documents/.*
+          epod_poc/.*
+          epod_ui/.*
+          epod_services/HPLVehicleManagementService/.*
+          epod_services/UserManagementService/.*
+          epod_services/cctr-service/.*
+          epod_services/ePOD-workflow/src/main/java/com/tcgdigital/epod/workflow/.*
+          epod_services/epodConfigServer/.*
+          epod_services/epodGatewayService/.*
+          epod_services/erpintegration-service/.*
+          epod_services/git-config-repo/.*
+          epod_services/naming-server/.*
+          epod_services/vehicletracking-service/.*
+          epod_services/User_management_2/UserManagementService/.*
+          epod_services/Text.txt
+
+Pre Steps:
+    Execute Shell:
+      cd epod_services/vehiclemanagement-service
+      mvn clean verify sonar:sonar \
+        -Dsonar.projectKey=mcpi-vehiclemanagement-service \
+        -Dsonar.projectName=mcpi-vehiclemanagement-service \
+        -Dsonar.host.url=http://localhost:9000 \
+        -Dsonar.login=40702be4c6db09a9e466dcba860c13aecac1ee8d
+
+Post Steps:
+    Command:
+      cd epod_services/vehiclemanagement-service
+      ## login to docker account
+      sudo docker logout
+      DOCKER_PASS='A3.WnNf.NpRb4X-'
+      DOCKER_USER='tcghub'
+      echo $DOCKER_PASS | sudo docker login -u$DOCKER_USER --password-stdin
+
+      ## Build & Push image to dockrhub
+      IMG_NAME=mcpi_vehiclemanagement_service
+      UID=tcghub
+      sudo docker build -t $IMG_NAME:1.$BUILD_ID .
+      sudo docker tag $IMG_NAME:1.$BUILD_ID $UID/$IMG_NAME:1.$BUILD_ID
+      sudo docker tag $IMG_NAME:1.$BUILD_ID $UID/$IMG_NAME:latest
+      sudo docker push $UID/$IMG_NAME:1.$BUILD_ID
+      sudo docker push $UID/$IMG_NAME:latest
+      sudo docker rmi $IMG_NAME:1.$BUILD_ID $UID/$IMG_NAME:1.$BUILD_ID $UID/$IMG_NAME:latest
+
+Send files or execute commands over SSH:
+
+    SSH Publishers:
+      ansible_server
+
+    Exec command:
+      cd /home/ansadmin/ansible-playbooks
+      ansible-playbook -i hosts -e "UID=tcghub" -e "DOCKER_PASS=A3.WnNf.NpRb4X-" -e "IMG_NAME=mcpi_vehiclemanagement_service" -e "PORT_GLOB=10001" -e "PORT_LOCAL=10001"  create-docker-container.yaml

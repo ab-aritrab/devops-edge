@@ -1,0 +1,6 @@
+[program:process]
+command=/opt/scripts/script.sh
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/process.err.log
+stdout_logfile=/var/log/process.err.log

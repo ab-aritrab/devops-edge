@@ -19,3 +19,21 @@ def job = Jenkins.getInstance().getItemByFullName(jobName, Job.class)
 job.getBuilds().each { it.delete() }  
 job.nextBuildNumber = 1   
 job.save()
+
+
+/OR/ run below code for all jobs where only keep last 10 or MAX_BUILD=x value build number
+
+import jenkins.model.Jenkins
+import hudson.model.Job
+
+MAX_BUILDS = 10
+Jenkins.instance.getAllItems(Job.class).each { job ->
+  println job.name
+  def recent = job.builds.limit(MAX_BUILDS)
+  for (build in job.builds) {
+    if (!recent.contains(build)) {
+      println "Preparing to delete: " + build
+      //build.delete()
+    }
+  }
+}

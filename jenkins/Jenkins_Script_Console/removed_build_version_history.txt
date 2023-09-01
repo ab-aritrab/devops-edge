@@ -21,7 +21,7 @@ job.nextBuildNumber = 1
 job.save()
 
 
-/OR/ run below code for all jobs where only keep last 10 or MAX_BUILD=x value build number
+/OR/Run the below code for all jobs where only keep the last 10 or MAX_BUILD=x value build number
 
 import jenkins.model.Jenkins
 import hudson.model.Job
